@@ -5,6 +5,8 @@
  *
  */
 
+#define HAVE_NEW_EXIF
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
