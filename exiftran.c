@@ -4,6 +4,8 @@
  * (c) 2002-2012 Gerd Hoffmann <gerd@kraxel.org>
  */
 
+#define HAVE_NEW_EXIF
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
