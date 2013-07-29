@@ -1,0 +1,143 @@
+.TH IDA 1 "(c) 2001-2012 Gerd Hoffmann" "IDA 2.08" "Image viewing and editing program"
+\#
+\#
+.SH NAME
+ida - image viewing and editing program
+\#
+\#
+.SH SYNOPSIS
+\fBida\fP [\fIoptions\fP] \fIfile ...\fP
+\#
+\#
+.SH DESCRIPTION
+.BR Ida
+is a small and fast application for viewing images. Some basic editing functions
+are available too.
+.P
+You can specify any number of image files as arguments on the command line. Or
+you can read a single image from stdin by specifying "-" as only argument ("\fIxwd
+| ida -\fP" works nice for screenshots).
+\#
+\#
+.SH OPTIONS
+.BR Ida
+understands the usual toolkit options (-geometry + friends). Additional options
+are:
+.TP
+.B -help
+print a short help text
+.TP
+.BI "-pcd" "\ n"
+Pick size for PhotoCD images (\fIn = 1 .. 5\fP, default 3).
+.TP
+.B -debug
+Enable debug messages. Also has the side effect that error messages are
+displayed on stderr only and \fBnot\fP as message box.
+\#
+\#
+.SH "GETTING STARTED"
+.SS Mouse functions
+.P
+With the left mouse button you can creates and edit a selection rectangle. The
+middle button is used to start drag'n'drop operations. The right button brings
+up the control window with menus, toolbar and file list.
+.SS Keyboard Shortcuts
+.P
+Many keyboard shortcuts used by
+.BR xv
+are available in
+.BR ida
+too. If you are familiar
+with
+.BR xv
+if should be easy for you to get started with
+.BR "ida" "."
+.P
+All available keyboard shortcuts are also listed in the menus of the control
+window. The most important ones are listed below:
+.TP
+\fBSPACE\fP
+Next file.
+.TP
+\fBBACKSPACE\fP
+Previous file.
+.TP
+\fBLEFT_ARROW\fP, \fBRIGHT_ARROW\fP, \fBUP_ARROW\fP, \fBDOWN_ARROW\fP
+Scrolling (hold \fBCtrl\fP key for big steps).
+.TP
+\fB+/-\fP
+Zoom in/out.
+.TP
+\fBq\fP
+Quit.
+.SS Supported image formats
+.TP
+.B Read:
+\fIBMP\fP (uncompressed), \fIPhotoCD\fP, \fIPPM\fP, \fIXBM\fP, \fIXPM\fP,
+\fIXWD\fP, \fIGIF\fP, \fIJPEG\fP, \fIPNG\fP, \fITIFF\fP. The last four are
+supported using the usual libraries, i.e. you need to have them installed at
+compile time.
+.TP
+.B Write:
+\fIJPEG\fP, \fIPNG\fP, \fIPostScript\fP, \fIPPM\fP, \fITIFF\fP.
+.SS Using drag'n'drop
+.B Ida
+is a motif application and thus supports the motif drag'n'drop protocol in both
+directions. The \fBxdnd\fP protocol is supported too, but only in one direction
+(receive drops).
+.P
+.BR Ida
+uses the middle mouse button to start a drag'n'drop operation (as the motif
+style guide suggests). This works for the main window and the file buttons
+within the file browser.
+.P
+.B Motif applications
+should have absolutely no problems to deal with
+.BR "ida" "'s"
+drag'n'drop support. You can drop images into some netscape 4.x window -- it
+imply works. Mozilla accepts motif drops too.
+.P
+Interoperation with 
+.B gnome / gtk
+is good. I can drag files from
+.BR ida
+to
+.BR eeyes
+and visa versa without problems. File drops from
+.BR gmc
+into
+.BR ida
+work just fine too.
+.P
+Interoperation with
+.B KDE
+is bad. cut+paste works most of the time, drag'n'drop often doesn't. The X11
+selection handling of the Qt toolkit has a few design bugs and sucks. Basically
+the troll guys didn't understand what the TARGETS target is good for and violate
+the ICCCM specs by ignoring it.
+\#
+\#
+.SH "SEE ALSO"
+.BR xwd (1)
+\#
+\#
+.SH AUTHOR
+Gerd Hoffmann
+.BR <gerd@kraxel.org>
+\#
+\#
+.SH COPYRIGHT
+Copyright (c) 2002-2012 Gerd Hoffmann <gerd@kraxel.org>
+.P
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; either version 2 of the License, or (at your option) any later
+version.
+.P
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+.P
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 675 Mass Ave,
+Cambridge, MA 02139, USA.

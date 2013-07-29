@@ -1,0 +1,283 @@
+.TH FBI 1 "(c) 1998-2012 Gerd Hoffmann" "FBI 2.08" "Linux framebuffer imageviewer"
+\#
+\#
+.SH NAME
+fbi - Linux framebuffer imageviewer
+\#
+\#
+.SH SYNOPSIS
+\fBfbi\fP [\fIoptions\fP] \fIfile ...\fP
+\#
+\#
+.SH DESCRIPTION
+.BR Fbi
+displays the specified file(s) on the linux console using the framebuffer
+device. \fIPhotoCD\fP, \fIjpeg\fP, \fIppm\fP, \fIgif\fP, \fItiff\fP, \fIxwd\fP,
+\fIbmp\fP, \fIpng\fP and \fIwebp\fP formats are supported natively. For other
+.BR fbi
+tries to use
+.BR "ImageMagick" "(1)\'s"
+.BR "convert" "(1)."
+\#
+\#
+.SH OPTIONS
+.TP
+.B -h, --help
+Print usage info.
+.TP
+.B -V, --version
+Print \fBfbi\fP version number.
+.TP
+.B --store
+Write command line arguments to config file.
+.TP
+.BI "-l" "\ file" ", --list" "\ file"
+Read image filelist from \fIfile\fP.
+.TP
+.B -P, --text
+Enable textreading mode. In this mode
+.BR fbi
+will display large images without vertical offset (default is to center the
+images). The \fBSPACE\fP command will first try to scroll down and go to the
+next image only if it is already on the bottom of the page. Useful if the images
+you are watching are text pages, all you have to do to get the next piece of
+text is to press space...
+.TP
+.B -a, --autozoom
+Enable autozoom.
+.BR Fbi
+will automagically pick a reasonable zoom factor when loading a new image.
+.TP
+.B --(no)autoup
+Like autozoom, but scale up only.
+.TP
+.B --(no)autodown
+Like autozoom, but scale down only.
+.TP
+.B --(no)fitwidth
+Use width only for autoscaling.
+.TP
+.B -v, --(no)verbose
+Be verbose: enable status line on the bottom of the screen.
+.TP
+.B -u, --(no)random
+Randomize the order of the filenames.
+.TP
+.B --(no)comments
+Display comment tags (if present) instead of the filename. Probably only useful
+if you added reasonable comments yourself (using
+.BR "wrjpgcom" "(1)"
+for example), otherwise you likely just find texts pointing to the software
+which created the image.
+.TP
+.B -e, --(no)edit
+Enable editing commands.
+.TP
+.B --(no)backup
+Create backup files (when editing images).
+.TP
+.B -p, --(no)preserve
+Preserve timestamps (when editing images).
+.TP
+.B --(no)readahead
+Read ahead images into cache.
+.TP
+.BI "--cachemem" "\ size"
+Image cache \fIsize\fP in megabytes (MB).
+.TP
+.BI "--blend" "\ time"
+Image blend \fItime\fP in miliseconds.
+.TP
+.BI "-T" "\ n" ", --vt" "\ n"
+Start on virtual console \fIn\fP.
+.TP
+.BI "-s" "\ steps" ", --scroll" "\ steps"
+Set scroll \fIsteps\fP in pixels (default is 50).
+.TP
+.BI "-t" "\ sec" ", --timeout" "\ sec"
+Load next image after \fIsec\fP seconds without any keypress (i.e. slideshow).
+.TP
+.B -1, --(no)once
+Don't loop (only use with \fB-t\fP).
+.TP
+.BI "-r" "\ n" ", --resolution" "\ n"
+Select resolution, \fIn = 1..5\fP (only \fIPhotoCD\fP).
+.TP
+.BI "-g" "\ n" ", --gamma" "\ n"
+Gamma correction. Default is 1.0. Requires \fIPseudocolor\fP or
+\fIDirectcolor\fP visual, doesn't work for \fITruecolor\fP.
+.TP
+.BI "-f" "\ <arg>" ", --font" "\ <arg>"
+Set font. This \fI<arg>\fP can be anything fontconfig accepts (see
+.BR "fonts\-conf" "(5))."
+Try
+.BR "fc\-list" "(1)"
+for a list of known fonts on your system. The fontconfig config file is
+evaluated as well, so any generic stuff defined there (such as mono, sans) will
+work as well. It is recommended to use monospaced fonts, the textboxes (help
+text, exif info) look better then.
+.TP
+.BI "-d" "\ /dev/fbN" ", --device" "\ /dev/fbN"
+Use \fI/dev/fbN\fP device framebuffer. Default is the one your virtual console
+is mapped to.
+.TP
+.BI "-m" "\ videomode" ", --mode" "\ videomode"
+Name of the video mode to use (video mode must be listed in
+\fI/etc/fb.modes\fP). Default is not to change the video mode.
+\#
+\#
+.SH ENVIRONMENT
+.BR Fbi
+uses the following environment variables:
+.TP
+.BR FBGAMMA
+This variable may be used to specify a default gamma correction.
+\#
+\#
+.SH "COMMAND USAGE"
+The commands take effect immediately; it is not necessary to type a carriage
+return.
+.PP
+In the following commands, \fIi\fP is a numerical argument.
+.SS Scrolling
+.TP
+\fBLEFT_ARROW\fP, \fBRIGHT_ARROW\fP, \fBUP_ARROW\fP, \fBDOWN_ARROW\fP
+Scroll large images.
+.TP
+\fBPREV_SCREEN\fP, \fBk\fP
+Previous image.
+.TP
+\fBNEXT_SCREEN\fP, \fBSPACE\fP, \fBj\fP
+Next image.
+.TP
+\fIi\fP\fBg\fP
+Jump to image #\fIi\fP.
+.TP
+\fBRETURN\fP
+Write the filename of the current image to
+.BR "stdout" "(3),"
+then go to the next image.
+.P
+The \fBRETURN\fP vs. \fBSPACE\fP key thing can be used to create a file list
+while reviewing the images and use the list for batch processing later on:
+.P
+.in +4n
+\fIfbi\ file1.gif\ file2.jpg\ file3.jpg >\ fileimagelist.lst\fP
+.in
+.P
+.in +4n
+some \fBRETURN\fP and \fBSPACE\fP...
+.P
+.in +4n
+\fIfbi\ -l\ fileimagelist.lst\fP
+.in
+.SS Zoom
+.TP
+\fBa\fP
+Autozoom.
+.TP
+\fB+\fP
+In.
+.TP
+\fB-\fP
+Out.
+.TP
+\fIi\fP\fBs\fP
+Set zoom to \fIi\fP%.
+.SS Other
+.TP
+\fBESQ\fP, \fBq\fP
+Quit.
+.TP
+\fBv\fP
+Toggle status line.
+.TP
+\fBh\fP
+Display textbox with brief help.
+.TP
+\fBi\fP
+Display textbox with some \fIEXIF\fP info.
+.TP
+\fBp\fP
+Pause the slideshow (if started with \fB-t\fP, toggle).
+.SS Edit mode
+.BR Fbi
+also provides some very basic image editing facilities. You have to
+start
+.BR fbi
+with the \fI-e\fP switch to use them.
+.TP
+\fBD\fP, \fBShift+d\fP
+Delete image.
+.TP
+\fBr\fP
+Rotate 90 degrees clockwise.
+.TP
+\fBl\fP
+Rotate 90 degrees counter-clock wise.
+.TP
+\fBx\fP
+Mirror image vertically (top / bottom).
+.TP
+\fBy\fP
+Mirror image horizontally (left to right).
+.P
+The delete function actually wants a capital letter \fBD\fP, thus you have to type
+\fBShift+d\fP. This is done to avoid deleting images by mistake because there
+are no safety bells: If you ask
+.BR fbi
+to delete the image, it will be deleted without questions asked.
+.P
+The rotate function actually works for \fIJPEG\fP images only. It does a
+lossless transformation of the image.
+\#
+\#
+.SH BUGS
+.BR Fbi
+needs rw access to the framebuffer devices (\fI/dev/fbN\fP), i.e you (our your
+admin) have to make sure
+.BR fbi
+can open the devices in rw mode. The IMHO most elegant way is to use
+.BR PAM (7)
+to chown the devices to the user logged in on the console. Another way is to
+create some group, chown the special files to that group and put the users which
+are allowed to use the framebuffer device into the group. You can also make the
+special files world writable, but be aware of the security implications this
+has. On a private box it might be fine to handle it this way though.
+.P
+.BR Fbi
+also needs access to the linux console (\fI/dev/ttyN\fP) for sane console switch
+handling. That is obviously no problem for console logins, but any kind of a
+pseudo tty (xterm, ssh, screen, ...) will \fBnot\fP work.
+\#
+\#
+.SH "SEE ALSO"
+.BR convert (1),
+.BR fbset (1),
+.BR fc-list (1),
+.BR imagemagick (1),
+.BR wrjpgcom (1),
+.BR fonts-conf (5),
+.BR PAM (7)
+\#
+\#
+.SH AUTHOR
+Gerd Hoffmann
+.BR <gerd@kraxel.org>
+\#
+\#
+.SH COPYRIGHT
+Copyright (c) 1999-2012 Gerd Hoffmann <gerd@kraxel.org>
+.P
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; either version 2 of the License, or (at your option) any later
+version.
+.P
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+.P
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 675 Mass Ave,
+Cambridge, MA 02139, USA.

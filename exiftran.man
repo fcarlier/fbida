@@ -1,0 +1,138 @@
+.TH EXIFTRAN 1 "(c) 2002-2012 Gerd Hoffmann" "EXIFTRAN 2.08" "Transform digital camera jpeg images"
+\#
+\#
+.SH NAME
+exiftran - transform digital camera jpeg images
+\#
+\#
+.SH SYNOPSIS
+.TP
+\fBexiftran\fP [\fIoptions\fP] \fIfile1 file2 ... fileN\fP
+.TP
+\fBexiftran\fP -i [\fItransform options\fP] [\fIothers options\fP] \fIfile1 file2 ... fileN\fP
+.TP
+\fBexiftran\fP -o \fIoutputfile\fP [\fItransform options\fP] [\fIother options\fP] \fIinputfile\fP
+.TP
+\fBexiftran\fP -d \fIfile1 file2 ... fileN\fP > \fIexifinfo\fP
+\#
+\#
+.SH DESCRIPTION
+.BR Exiftran
+is a command line utility to transform digital camera \fIjpeg\fP images. It can do lossless
+rotations like
+.BR "jpegtran" "(1),"
+but unlike
+.BR "jpegtran" "(1)"
+it cares about the \fIEXIF\fP data: It can rotate images automatically by
+checking the exif orientation tag; it updates the exif informations if needed
+(image dimension, orientation); it also rotates the exif thumbnail. It can
+process multiple images at once.
+\#
+\#
+.SH "TRANSFORM OPTIONS"
+.TP
+.B -a
+Automatic (using exif orientation tag).
+.TP
+.B -9
+Rotate by 90 degrees clockwise.
+.TP
+.B -1
+Rotate by 180 degrees clockwise.
+.TP
+.B -2
+Rotate by 270 degrees clockwise.
+.TP
+.B -f
+Mirror image vertically (top / bottom).
+.TP
+.B -F
+Mirror image horizontally (left to right).
+.TP
+.B -t
+Transpose (across UL-to-LR corner).
+.TP
+.B -T
+Transverse (across UR-to-LL corner).
+.TP
+.B -nt
+Don't transform exif thumbnail.
+.TP
+.B -ni
+Don't transform jpeg image. You might need this or the \fB-nt\fP option to fixup
+things in case you transformed the image with some utility which ignores the
+exif thumbnail. Just generating a new thumbnail with \fB-g\fP is another way to
+fix it.
+.TP
+.B -no
+Don't update the orientation tag. By default
+.BR exiftran
+sets the orientation to "1" (no transformation needed) to avoid other exif-aware
+applications try to rotate the already-rotated image again.
+\#
+\#
+.SH "OTHER OPTIONS"
+.TP
+.B -h
+Print a short help text.
+.TP
+.B -d
+Dump exif data for the file(s).
+.TP
+.BI "-c" "\ text"
+Set jpeg comment tag to \fItext\fP.
+.TP
+.B -g
+(re)generate exif thumbnail.
+.TP
+.BI "-o" "\ file"
+Specify output \fIfile\fP. Only one input file is allowed in this mode.
+.TP
+.B -i
+Enable inplace editing of the images.
+.BR Exiftran
+allows multiple input files then. You must specify either this option or a
+output file with \fB-o\fP for all operations which modify the image (i.e.
+everything but \fB-d\fP right now).
+.TP
+.B -b
+Create a backup file when doing inplace editing (imply \fB-i\fP).
+.TP
+.B -p
+Preserve timestamps (atime + mtime) when doing inplace editing (imply \fB-i\fP).
+\#
+\#
+.SH EXAMPLES
+Autorotate all jpeg files in the current directory:
+.P
+.in +4n
+   \fIexiftran\ -ai\ *.jpeg\fP
+.in
+\#
+\#
+.SH "SEE ALSO"
+.BR exif (1),
+.BR exiftags (1),
+.BR jpegtran (1)
+\#
+\#
+.SH AUTHOR
+Gerd Hoffmann
+.BR <gerd@kraxel.org>
+\#
+\#
+.SH COPYRIGHT
+Copyright (c) 2002-2012 Gerd Hoffmann <gerd@kraxel.org>
+.P
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; either version 2 of the License, or (at your option) any later
+version.
+.P
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+.P
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 675 Mass Ave,
+Cambridge, MA 02139, USA.
