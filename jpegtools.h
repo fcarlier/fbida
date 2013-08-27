@@ -10,6 +10,10 @@
 #define JFLAG_FILE_BACKUP          0x0100
 #define JFLAG_FILE_KEEP_TIME       0x0200
 
+#define container_of(ptr, type, member) ({			\
+const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
+(type *)( (char *)__mptr - offsetof(type,member) );})
+
 /* functions */
 int jpeg_transform_fp(FILE *in, FILE *out,
 		      JXFORM_CODE transform,

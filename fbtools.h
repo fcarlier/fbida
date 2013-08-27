@@ -7,7 +7,7 @@
 extern struct fb_fix_screeninfo   fb_fix;
 extern struct fb_var_screeninfo   fb_var;
 extern unsigned char             *fb_mem;
-extern int			  fb_mem_offset;
+extern int                        fb_mem_offset;
 extern int                        fb_switch_state;
 
 /* init + cleanup */

@@ -40,8 +40,7 @@ static unsigned short calc_gamma(int n, int max)
     return ret;
 }
 
-static void
-linear_palette(int r, int g, int b)
+static void linear_palette(int r, int g, int b)
 {
     int i, size;
     
@@ -63,8 +62,7 @@ linear_palette(int r, int g, int b)
 	p_cmap.len = size;
 }
 
-static void
-dither_palette(int r, int g, int b)
+static void dither_palette(int r, int g, int b)
 {
     int             rs, gs, bs, i;
 
@@ -609,6 +607,41 @@ void shadow_draw_text_box(FT_Face face, int x, int y, int percent, wchar_t *line
 
 static FT_Library freetype;
 
+//FCC1: Use "/usr/share/fonts/truetype/freefont/FreeSans.ttf", Remove fontconfig
+// Voir usage de FT_Stroker_Set, ADD?
+//NEW:
+FT_Face initialize_fonts(char *font_path, unsigned int font_size)
+{
+    FT_Face     ft_face_ = NULL;
+    int         rc;
+
+    rc = FT_Init_FreeType(&freetype);
+    if (rc) {
+	fprintf(stderr,"FT_Init_FreeType() failed\n");
+	exit(1);
+    }
+    rc = FT_New_Face (freetype, "/usr/share/fonts/truetype/freefont/FreeSans.ttf", 0, &ft_face_);
+    if (rc)
+	fprintf(stderr,"Unable to open font\n");
+	return NULL;
+    font_size = 16;
+    FT_Set_Pixel_Sizes(ft_face_, 0, font_size);
+    return ft_face_;
+}
+
+/*
+void destroy_fonts()
+{
+   if (freetype) {
+      auto error = FT_Done_FreeType(freetype);
+      assert(!error);
+      freetype = {};
+      ft_face_ = {};
+   }
+}
+
+//OLD:
+*/
 void font_init(void)
 {
     int rc;
@@ -631,7 +664,7 @@ FT_Face font_open(char *fcname)
     double      pixelsize;
     int         rc;
 
-    /* parse + match font name */
+    // parse + match font name
     pattern = FcNameParse(fcname);
     FcConfigSubstitute(NULL, pattern, FcMatchPattern);
     FcDefaultSubstitute(pattern);
@@ -644,14 +677,14 @@ FT_Face font_open(char *fcname)
     if (h)
 	*h = 0;
 
-    /* try get the face directly */
+    // try get the face directly
     result = FcPatternGetFTFace(match, FC_FT_FACE, 0, &face);
     if (FcResultMatch == result) {
 	fprintf(stderr,"using \"%s\", face=%p\n",fontname,face);
 	return face;
     }
 
-    /* failing that use the filename */
+    // failing that use the filename
     result = FcPatternGetString (match, FC_FILE, 0, &filename);
     if (FcResultMatch == result) {
 	result = FcPatternGetDouble(match, FC_PIXEL_SIZE, 0, &pixelsize);
@@ -666,9 +699,10 @@ FT_Face font_open(char *fcname)
 	return face;
     }
 
-    /* oops, didn't work */
+    // oops, didn't work
     return NULL;
 }
+
 
 /* ---------------------------------------------------------------------- */
 /* clear screen (areas)                                                   */

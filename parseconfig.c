@@ -15,7 +15,6 @@
 #include <sys/types.h>
 
 #include "list.h"
-#include "misc.h"
 #include "parseconfig.h"
 
 struct cfg_entry {

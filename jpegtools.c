@@ -36,8 +36,6 @@
 #include "transupp.h"		/* Support routines for jpegtran */
 #include "jpegtools.h"
 
-#include "misc.h"
-
 #include <libexif/exif-data.h>
 #include <libexif/exif-utils.h>
 #include <libexif/exif-ifd.h>

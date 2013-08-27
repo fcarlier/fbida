@@ -28,6 +28,8 @@ void shadow_draw_text_box(FT_Face face, int x, int y, int percent,
 
 void font_init(void);
 FT_Face font_open(char *fcname);
+FT_Face initialize_fonts(char *font_path, unsigned int font_size);
+//void destroy_fonts();
 
 void fb_clear_mem(void);
 void fb_clear_screen(void);

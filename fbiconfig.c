@@ -86,7 +86,7 @@ struct cfg_cmdline fbi_cfg[] = {
 	.desc     = "don't loop (for use with -t)",
     },{
 	.cmdline  = "comments",
-	.option   = { O_COMMENTS },
+	.option   = { O_COMMENTS },//FCC1: 
 	.yesno    = 1,
 	.desc     = "display image comments",
     },{
@@ -95,16 +95,6 @@ struct cfg_cmdline fbi_cfg[] = {
 	.option   = { O_EDIT },
 	.yesno    = 1,
 	.desc     = "enable editing commands (see man page)",
-    },{
-	.cmdline  = "backup",
-	.option   = { O_BACKUP },
-	.yesno    = 1,
-	.desc     = "  create backup files when editing",
-    },{
-	.cmdline  = "preserve",
-	.option   = { O_PRESERVE },
-	.yesno    = 1,
-	.desc     = "  preserve timestamps when editing",
     },{
 	.cmdline  = "readahead",
 	.option   = { O_READ_AHEAD },
@@ -124,7 +114,7 @@ struct cfg_cmdline fbi_cfg[] = {
     },{
 	.letter   = 'T',
 	.cmdline  = "vt",
-	.option   = { O_VT },
+	.option   = { O_VT },//FCC1: 
 	.needsarg = 1,
 	.desc     = "start on virtual console <arg>",
     },{
@@ -160,13 +150,13 @@ struct cfg_cmdline fbi_cfg[] = {
     },{
 	.letter   = 'd',
 	.cmdline  = "device",
-	.option   = { O_DEVICE },
+	.option   = { O_DEVICE },//FCC1: 
 	.needsarg = 1,
 	.desc     = "use framebuffer device <arg>",
     },{
 	.letter   = 'm',
 	.cmdline  = "mode",
-	.option   = { O_VIDEO_MODE },
+	.option   = { O_VIDEO_MODE },//FCC1: 
 	.needsarg = 1,
 	.desc     = "use video mode <arg> (from /etc/fb.modes)",
 
