@@ -30,7 +30,7 @@ fbi : LDLIBS += $(call ac_lib_mkvar,$(fbi_libs),LDLIBS)
 
 ########################################################################
 # rules for fib and object files
-OBJS_FBI := fb-gui.o fbi.o fbtools.o desktop.o \
+OBJS_FBI := fb-gui.o fbi.o fbtools.o \
 	    parseconfig.o fbiconfig.o \
 	    jpegtools.o jpeg/80/transupp.o \
 	    dither.o filter.o op.o readers.o \
