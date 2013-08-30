@@ -316,8 +316,7 @@ static int fb_activate_current(int tty)
     return 0;
 }
 
-int
-fb_init(char *device, char *mode, int vt)
+int fb_init(char *device, char *mode, int vt)
 {
     char   fbdev[16];
     struct vt_stat vts;
@@ -456,8 +455,7 @@ fb_init(char *device, char *mode, int vt)
     exit(1);
 }
 
-void
-fb_cleanup(void)
+void fb_cleanup(void)
 {
     /* restore console */
     if (-1 == ioctl(tty,KDSETMODE, kd_mode))

@@ -46,7 +46,7 @@
 #define GET_AUTO_DOWN()		cfg_get_bool(O_AUTO_DOWN,     0)
 #define GET_FIT_WIDTH()		cfg_get_bool(O_FIT_WIDTH,     0)
 #define GET_QUIET()		cfg_get_bool(O_QUIET,         0)
-#define GET_VERBOSE()		cfg_get_bool(O_VERBOSE,       1)
+#define GET_VERBOSE()		cfg_get_bool(O_VERBOSE,       0)
 #define GET_RANDOM()		cfg_get_bool(O_RANDOM,        0)
 #define GET_ONCE()		cfg_get_bool(O_ONCE,          0)
 #define GET_COMMENTS()		cfg_get_bool(O_COMMENTS,      0)
@@ -69,5 +69,4 @@
 extern struct cfg_cmdline fbi_cmd[];
 extern struct cfg_cmdline fbi_cfg[];
 void fbi_read_config(void);
-void fbi_write_config(void);
 

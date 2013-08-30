@@ -16,4 +16,4 @@ The applications originals of Gerd Hoffmann are:
     exiftran – command line tool to do lossless transformations of JPEG images. Works much like jpegtran, but unlike jpegtran it does not ignore the EXIF data ;)
     thumbnail.cgi – Small and fast CGI script (written in C) to extract EXIF thumbnails from jpeg images and send them to the web browser.
 
-In my case, i want just fbi for RaspBerry Pi
+In my case, i want just "fbi" for RaspBerry Pi

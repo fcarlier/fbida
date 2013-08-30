@@ -50,13 +50,13 @@ tiff_init(FILE *fp, char *filename, unsigned int page,
     TIFFGetField(h->tif, TIFFTAG_FILLORDER,       &h->fillorder);
     TIFFGetField(h->tif, TIFFTAG_PHOTOMETRIC,     &h->photometric);
     h->row = malloc(TIFFScanlineSize(h->tif));
-    if (debug)
+    /* FCC : if (debug)
 	fprintf(stderr,"tiff: %" PRId32 "x%" PRId32 ", planar=%d, "
 		"nsamples=%d, depth=%d fo=%d pm=%d scanline=%" PRId32 "\n",
 		h->width,h->height,h->config,h->nsamples,h->depth,
 		h->fillorder,h->photometric,
 		TIFFScanlineSize(h->tif));
-
+    */
     if (PHOTOMETRIC_PALETTE   == h->photometric  ||
 	PHOTOMETRIC_YCBCR     == h->photometric  ||
 	PHOTOMETRIC_SEPARATED == h->photometric  ||

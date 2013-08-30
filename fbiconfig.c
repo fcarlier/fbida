@@ -187,9 +187,3 @@ void fbi_read_config(void)
     if (fbi_config)
 	cfg_parse_file("config", fbi_config);
 }
-
-void fbi_write_config(void)
-{
-    if (fbi_config)
-	cfg_write_file("config", fbi_config);
-}

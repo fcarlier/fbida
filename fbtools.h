@@ -12,7 +12,7 @@ extern int                        fb_switch_state;
 
 /* init + cleanup */
 int fb_probe(void);
-int  fb_init(char *device, char *mode, int vt);
+int fb_init(char *device, char *mode, int vt);
 void fb_cleanup(void);
 void fb_catch_exit_signals(void);
 void fb_memset(void *addr, int c, size_t len);

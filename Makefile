@@ -30,7 +30,7 @@ fbi : LDLIBS += $(call ac_lib_mkvar,$(fbi_libs),LDLIBS)
 
 ########################################################################
 # rules for fib and object files
-OBJS_FBI := fb-gui.o fbi.o fbtools.o desktop.o \
+OBJS_FBI := fb-gui.o fbi.o fbtools.o \
 	    parseconfig.o fbiconfig.o \
 	    jpegtools.o jpeg/80/transupp.o \
 	    dither.o filter.o op.o readers.o \
@@ -39,8 +39,8 @@ OBJS_FBI := fb-gui.o fbi.o fbtools.o desktop.o \
 OBJS_FBI += $(filter-out wr/%,$(call ac_lib_mkvar,$(fbi_libs),OBJS))
 
 fbi : CFLAGS  += -I/opt/fontconfig/include/ -I$(SDKSTAGE)/opt/vc/include/ -I$(SDKSTAGE)/opt/vc/include/freetype/ -I$(CROSS)/include
-fbi : LDFLAGS += -lfreetype -lexpat -lfontconfig
-fbi : LDLIBS  += $(INCLUDES) -L/opt/fontconfig/lib/
+fbi : LDFLAGS += -lfreetype -lexpat 
+fbi : LDLIBS  += $(INCLUDES) 
 fbi : LDLIBS  += -ljpeg -lexif -lm -lpng -lz -ltiff -lgif
 
 fbi : $(OBJS_FBI)

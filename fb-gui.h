@@ -26,10 +26,7 @@ void shadow_draw_string_cursor(FT_Face face, int x, int y, wchar_t *str, int pos
 void shadow_draw_text_box(FT_Face face, int x, int y, int percent,
 			  wchar_t *lines[], unsigned int count);
 
-void font_init(void);
-FT_Face font_open(char *fcname);
-FT_Face initialize_fonts(char *font_path, unsigned int font_size);
-//void destroy_fonts();
+FT_Face initialize_fonts(char *font_path, int font_size);
 
 void fb_clear_mem(void);
 void fb_clear_screen(void);

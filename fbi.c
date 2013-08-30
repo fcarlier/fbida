@@ -32,7 +32,6 @@
 #include "fbtools.h"
 #include "fb-gui.h"
 #include "filter.h"
-#include "desktop.h"
 #include "list.h"
 #include "fbiconfig.h"
 
@@ -78,7 +77,7 @@ int32_t         lut_red[256], lut_green[256], lut_blue[256];
 int             dither = FALSE, pcd_res = 3;
 int             v_steps = 50;
 int             h_steps = 50;
-int             textreading = 0, redraw = 0, statusline = 1;
+int             textreading = 0, redraw = 0, statusline = 0;
 int             fitwidth;
 
 /* file list */
@@ -210,14 +209,6 @@ static int flist_add_list(char *listfile)
 	flist_add(filename);
     }
     fclose(list);
-    return 0;
-}
-
-static int flist_del(struct flist *f)
-{
-    list_del(&f->list);
-    free(f->name);
-    free(f);
     return 0;
 }
 
@@ -374,9 +365,9 @@ static void status_update(unsigned char *desc, char *info)
     swprintf(str,ARRAY_SIZE(str),L"%s",desc);
     shadow_draw_string(face, 0, yt, str, -1);
     if (info) {
-	swprintf(str,ARRAY_SIZE(str), L"[ %s ] H - Help", info);
+	swprintf(str,ARRAY_SIZE(str), L"[ %s ]", info);
     } else {
-	swprintf(str,ARRAY_SIZE(str), L"| H - Help");
+	swprintf(str,ARRAY_SIZE(str), L"|");
     }
     shadow_draw_string(face, fb_var.xres, yt, str, 1);
 
@@ -395,19 +386,6 @@ static void status_error(unsigned char *msg)
 
     shadow_render();
     sleep(2);
-}
-
-static void status_edit(unsigned char *msg, int pos)
-{
-    int yt = fb_var.yres + (face->size->metrics.descender >> 6);
-    wchar_t str[128];
-
-    status_prepare();
-
-    swprintf(str,ARRAY_SIZE(str), L"%s", msg);
-    shadow_draw_string_cursor(face, 0, yt, str, pos);
-
-    shadow_render();
 }
 
 static void show_help(void)
@@ -470,6 +448,7 @@ tty_restore(void)
 }
 
 /* testing: find key codes */
+#if 0
 static void debug_key(char *key)
 {
     char linebuffer[128];
@@ -483,6 +462,7 @@ static void debug_key(char *key)
 			key[i] < 0x20 ? key[i] + 0x40 : key[i]);
     status_update(linebuffer, NULL);
 }
+#endif
 
 static void
 console_switch(void)
@@ -915,48 +895,6 @@ static void scale_fix_top_left(struct flist *f, float old, float new)
 
 /* ---------------------------------------------------------------------- */
 
-static char *my_basename(char *filename)
-{
-    char *h;
-    
-    h = strrchr(filename,'/');
-    if (h)
-	return h+1;
-    return filename;
-}
-
-static char *file_desktop(char *filename)
-{
-    static char desc[128];
-    char *h;
-
-    strncpy(desc,filename,sizeof(desc)-1);
-    if (NULL != (h = strrchr(filename,'/'))) {
-	snprintf(desc,sizeof(desc),"%.*s/%s", 
-		 (int)(h - filename), filename,
-		 ".directory");
-    } else {
-	strcpy(desc,".directory");
-    }
-    return desc;
-}
-
-static char *make_desc(struct ida_image_info *img, char *filename)
-{
-    static char linebuffer[128];
-    char *desc;
-    int len;
-
-    memset(linebuffer,0,sizeof(linebuffer));
-    strncpy(linebuffer,filename,sizeof(linebuffer)-1);
-
-    desc = file_desktop(filename);
-    len = desktop_read_entry(desc, "Comment=", linebuffer, sizeof(linebuffer));
-    if (0 != len)
-	snprintf(linebuffer+len,sizeof(linebuffer)-len," (%s)", my_basename(filename));
-    return linebuffer;
-}
-
 static char *make_info(struct ida_image *img, float scale)
 {
     static char linebuffer[128];
@@ -968,105 +906,6 @@ static char *make_info(struct ida_image *img, float scale)
 	     img->i.width, img->i.height,
 	     fcurrent->nr, fcount);
     return linebuffer;
-}
-
-static char edit_line(struct ida_image *img, char *line, int max)
-{
-    int      len = strlen(line);
-    int      pos = len;
-    int      rc;
-    char     key[11];
-    fd_set  set;
-
-    do {
-	status_edit(line,pos);
-	
-	FD_SET(0, &set);
-	rc = select(1, &set, NULL, NULL, NULL);
-        if (switch_last != fb_switch_state) {
-	    console_switch();
-	    continue;
-	}
-	rc = read(0, key, sizeof(key)-1);
-	if (rc < 1) {
-	    /* EOF */
-	    return KEY_EOF;
-	}
-	key[rc] = 0;
-
-	if (0 == strcmp(key,"\x0a")) {
-	    /* Enter */
-	    return 0;
-	    
-	} else if (0 == strcmp(key,"\x1b")) {
-	    /* ESC */
-	    return KEY_ESC;
-	    
-	} else if (0 == strcmp(key,"\x1b[C")) {
-	    /* cursor right */
-	    if (pos < len)
-		pos++;
-
-	} else if (0 == strcmp(key,"\x1b[D")) {
-	    /* cursor left */
-	    if (pos > 0)
-		pos--;
-
-	} else if (0 == strcmp(key,"\x1b[1~")) {
-	    /* home */
-	    pos = 0;
-	    
-	} else if (0 == strcmp(key,"\x1b[4~")) {
-	    /* end */
-	    pos = len;
-	    
-	} else if (0 == strcmp(key,"\x7f")) {
-	    /* backspace */
-	    if (pos > 0) {
-		memmove(line+pos-1,line+pos,len-pos+1);
-		pos--;
-		len--;
-	    }
-
-	} else if (0 == strcmp(key,"\x1b[3~")) {
-	    /* delete */
-	    if (pos < len) {
-		memmove(line+pos,line+pos+1,len-pos);
-		len--;
-	    }
-
-	} else if (1 == rc && isprint(key[0]) && len < max) {
-	    /* new key */
-	    if (pos < len)
-		memmove(line+pos+1,line+pos,len-pos+1);
-	    line[pos] = key[0];
-	    pos++;
-	    len++;
-	    line[len] = 0;
-
-	} else if (0 /* debug */) {
-	    debug_key(key);
-	    sleep(1);
-	}
-    } while (1);
-}
-
-static void edit_desc(struct ida_image *img, char *filename)
-{
-    static char linebuffer[128];
-    char *desc;
-    int len, rc;
-
-    desc = file_desktop(filename);
-    len = desktop_read_entry(desc, "Comment=", linebuffer, sizeof(linebuffer));
-    if (0 == len) {
-	linebuffer[0] = 0;
-	len = 0;
-    }
-    rc = edit_line(img, linebuffer, sizeof(linebuffer)-1);
-    if (0 != rc)
-	return;
-    desktop_write_entry(desc, "Directory", "Comment=", linebuffer);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1171,6 +1010,7 @@ static void flist_img_load(struct flist *f, int prefetch)
 {
     char linebuffer[128];
     float scale = 1;
+    int save_statusline;
 
     if (f->fimg) {
 	/* touch */
@@ -1178,10 +1018,13 @@ static void flist_img_load(struct flist *f, int prefetch)
 	list_add_tail(&f->lru, &flru);
 	return;
     }
-
-    snprintf(linebuffer,sizeof(linebuffer),"%s %s ...",
-	     prefetch ? "prefetch" : "loading", f->name);
+    
+    save_statusline = statusline;
+    statusline = 1;
+    snprintf(linebuffer,sizeof(linebuffer),"%s %s ...",	prefetch ? "prefetch" : "loading", f->name);
     status_update(linebuffer, NULL);
+    statusline = save_statusline;
+
     f->fimg = read_image(f->name);
     if (!f->fimg) {
 	snprintf(linebuffer,sizeof(linebuffer),
@@ -1232,7 +1075,6 @@ static void cleanup_and_exit(int code)
     fb_clear_screen();
     tty_restore();
     fb_cleanup();
-    //destroy_fonts();
     exit(code);
 }
 
@@ -1275,9 +1117,6 @@ main(int argc, char *argv[])
 	version();
 	exit(0);
     }
-    //FCC1: / store
-    if (GET_WRITECONF())
-	fbi_write_config();
 
     //FCC1: Valeur à mettre par défaut
     once        = GET_ONCE();//FCC1: 
@@ -1296,8 +1135,6 @@ main(int argc, char *argv[])
 
     fbgamma     = GET_GAMMA();//FCC1: 
 
-    //FCC1 (Rendre parametre) fontname    = cfg_get_str(O_FONT); 
-    
     //FCC1: l / list
     filelist    = cfg_get_str(O_FILE_LIST);
     
@@ -1317,21 +1154,15 @@ main(int argc, char *argv[])
 	flist_randomize();
     fcurrent = flist_first();
 
-    //FCC1: Police affichage, Use "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
-    font_init();
-    fontname = "FreeSans:size=16";
-    face = font_open(fontname);
-    //FCC1: REVOIR : face = initialize_fonts("/usr/share/fonts/truetype/freefont/FreeSans.ttf", 16);
+    //FCC : Police affichage, Use "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
+    face = initialize_fonts("/usr/share/fonts/truetype/freefont/FreeSans.ttf", 16);
     if (NULL == face) {
 	fprintf(stderr,"can't open font: %s\n",fontname);
 	exit(1);
     }
     
-    //FCC1: O_DEVICE, O_VIDEO_MODE, O_VT, O_COMMENTS
-    //fd = fb_init(cfg_get_str(O_DEVICE),
-	//	 cfg_get_str(O_VIDEO_MODE),
-	//	 GET_VT());
-    fd = fb_init(NULL, NULL, NULL);
+    //FCC : O_DEVICE, O_VIDEO_MODE, O_VT, O_COMMENTS
+    fd = fb_init(NULL, NULL, 0);
     
     fb_catch_exit_signals();
     fb_switch_init();
@@ -1339,7 +1170,7 @@ main(int argc, char *argv[])
     shadow_set_palette(fd);
     signal(SIGTSTP,SIG_IGN);
     
-    /* svga main loop */
+    // svga main loop
     tty_raw();
     desc = NULL;
     info = NULL;
@@ -1348,7 +1179,7 @@ main(int argc, char *argv[])
 	flist_img_release_memory();
 	img = flist_img_get(fcurrent);
 	if (img) {
-	    desc = make_desc(&fcurrent->fimg->i, fcurrent->name);
+	    desc = "Project Tifaifai";
 	    info = make_info(fcurrent->fimg, fcurrent->scale);
 	}
 

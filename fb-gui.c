@@ -7,9 +7,6 @@
 #include <sys/ioctl.h>
 #include <linux/fb.h>
 
-#include <fontconfig/fontconfig.h>
-#include <fontconfig/fcfreetype.h>
-
 #include "fbtools.h"
 #include "dither.h"
 #include "fb-gui.h"
@@ -607,102 +604,30 @@ void shadow_draw_text_box(FT_Face face, int x, int y, int percent, wchar_t *line
 
 static FT_Library freetype;
 
-//FCC1: Use "/usr/share/fonts/truetype/freefont/FreeSans.ttf", Remove fontconfig
-// Voir usage de FT_Stroker_Set, ADD?
-//NEW:
-FT_Face initialize_fonts(char *font_path, unsigned int font_size)
+//FCC: Use "/usr/share/fonts/truetype/freefont/FreeSans.ttf", Remove fontconfig
+FT_Face initialize_fonts(char *font_path, int font_size)
 {
-    FT_Face     ft_face_ = NULL;
-    int         rc;
+    FT_Face     face = NULL;
+    int         error;
 
-    rc = FT_Init_FreeType(&freetype);
-    if (rc) {
+    error = FT_Init_FreeType(&freetype);
+    if (error) {
 	fprintf(stderr,"FT_Init_FreeType() failed\n");
 	exit(1);
     }
-    rc = FT_New_Face (freetype, "/usr/share/fonts/truetype/freefont/FreeSans.ttf", 0, &ft_face_);
-    if (rc)
+    error = FT_New_Face (freetype, font_path, 0, &face);
+    if (error) {
 	fprintf(stderr,"Unable to open font\n");
 	return NULL;
-    font_size = 16;
-    FT_Set_Pixel_Sizes(ft_face_, 0, font_size);
-    return ft_face_;
-}
-
-/*
-void destroy_fonts()
-{
-   if (freetype) {
-      auto error = FT_Done_FreeType(freetype);
-      assert(!error);
-      freetype = {};
-      ft_face_ = {};
-   }
-}
-
-//OLD:
-*/
-void font_init(void)
-{
-    int rc;
-    
-    FcInit();
-    rc = FT_Init_FreeType(&freetype);
-    if (rc) {
-	fprintf(stderr,"FT_Init_FreeType() failed\n");
-	exit(1);
     }
-}
-
-FT_Face font_open(char *fcname)
-{
-    FcResult    result = 0;
-    FT_Face     face = NULL;
-    FcPattern   *pattern,*match;
-    char        *fontname,*h;
-    FcChar8     *filename;
-    double      pixelsize;
-    int         rc;
-
-    // parse + match font name
-    pattern = FcNameParse(fcname);
-    FcConfigSubstitute(NULL, pattern, FcMatchPattern);
-    FcDefaultSubstitute(pattern);
-    match = FcFontMatch (0, pattern, &result);
-    FcPatternDestroy(pattern);
-    if (FcResultMatch != result)
+    error = FT_Set_Pixel_Sizes(face, 0, font_size);
+    if (error) {
+	fprintf(stderr,"Unable to resize font\n");
 	return NULL;
-    fontname = FcNameUnparse(match);
-    h = strchr(fontname, ':');
-    if (h)
-	*h = 0;
-
-    // try get the face directly
-    result = FcPatternGetFTFace(match, FC_FT_FACE, 0, &face);
-    if (FcResultMatch == result) {
-	fprintf(stderr,"using \"%s\", face=%p\n",fontname,face);
-	return face;
     }
-
-    // failing that use the filename
-    result = FcPatternGetString (match, FC_FILE, 0, &filename);
-    if (FcResultMatch == result) {
-	result = FcPatternGetDouble(match, FC_PIXEL_SIZE, 0, &pixelsize);
-	if (FcResultMatch != result)
-	    pixelsize = 16;
-	fprintf(stderr,"using \"%s\", pixelsize=%.2lf file=%s\n",
-		fontname,pixelsize,filename);
-	rc = FT_New_Face (freetype, filename, 0, &face);
-	if (rc)
-	    return NULL;
-	FT_Set_Pixel_Sizes(face, 0, (int)pixelsize);
-	return face;
-    }
-
-    // oops, didn't work
-    return NULL;
+    fprintf(stderr,"pixelsize=%d file=%s\n", font_size, font_path);
+    return face;
 }
-
 
 /* ---------------------------------------------------------------------- */
 /* clear screen (areas)                                                   */
